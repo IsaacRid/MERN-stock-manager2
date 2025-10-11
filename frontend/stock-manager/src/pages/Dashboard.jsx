@@ -17,7 +17,7 @@ export default function Dashboard(props) {
     return (
         <>
             <Navbar setCurrentPage={setCurrentPage}></Navbar>
-            <div>
+            <div id="dashboard-container">
                 <h1>Dashboard</h1>
                 <p>Welcome, {auth.currentUser?.displayName || auth.currentUser?.email}</p>
                 <button onClick={handleLogout}>Sign Out</button>
