@@ -1,11 +1,11 @@
 import Navbar from "../components/Navbar"
 
-export default function Orders(props) {
+export default function Basket(props) {
     const { setCurrentPage } = props
     return (
         <>
             <Navbar setCurrentPage={setCurrentPage}></Navbar>
-            <p>Orders</p>
+            <p>basket</p>
         </>
     )
 }

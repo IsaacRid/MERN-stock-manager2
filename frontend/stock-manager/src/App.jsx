@@ -5,7 +5,7 @@ import Register from './pages/Register'
 import Dashboard from './pages/Dashboard'
 import Login from "./pages/Login";
 import Products from "./pages/Products";
-import Orders from "./pages/Orders";
+import Basket from "./pages/Basket";
 
 export default function App() {
 
@@ -32,7 +32,7 @@ export default function App() {
       {currentPage === "login" && <Login setCurrentPage={setCurrentPage} />}
       {currentPage === 'dashboard' && <Dashboard setCurrentPage={setCurrentPage} />}
       {currentPage === 'products' && <Products setCurrentPage={setCurrentPage} />}
-      {currentPage === 'orders' && <Orders setCurrentPage={setCurrentPage} />}
+      {currentPage === 'basket' && <Basket setCurrentPage={setCurrentPage} />}
     </>
   )
 }

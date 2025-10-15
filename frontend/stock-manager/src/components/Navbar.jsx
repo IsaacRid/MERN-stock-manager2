@@ -8,7 +8,7 @@ export default function Navbar(props) {
         <nav className="navbar">
             <button onClick={() => { setCurrentPage("dashboard") }}>Dashboard</button>
             <button onClick={() => { setCurrentPage("products") }}>Products</button>
-            <button onClick={() => { setCurrentPage("orders") }}>Orders</button>
+            <button onClick={() => { setCurrentPage("basket") }}>Basket</button>
         </nav>
     )
 }
