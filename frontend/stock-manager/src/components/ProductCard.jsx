@@ -1,4 +1,3 @@
-// ProductCard.jsx
 import React from "react";
 import "../index.css";
 
@@ -9,7 +8,7 @@ export default function ProductCard(props) {
             <img className="product-card-image" src={productImage} />
             <h4>{productTitle}</h4>
             <p>{productDescription}</p>
-            <p>£{productPrice}</p>
+            <p>£{(productPrice).toFixed(2)}</p>
             <div className="product-card-buttons">
                 <button className="product-card-button" onClick={onOpenModal}>
                     <i className="fa-solid fa-basket-shopping"></i>

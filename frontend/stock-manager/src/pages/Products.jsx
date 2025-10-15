@@ -1,4 +1,3 @@
-// Products.jsx
 import React, { useState, useEffect } from "react";
 import Navbar from "../components/Navbar";
 import ProductCard from "../components/ProductCard";
@@ -8,7 +7,7 @@ export default function Products(props) {
     const { setCurrentPage } = props;
     const [products, setProducts] = useState([]);
     const [activeProduct, setActiveProduct] = useState(null);
-    const [quantity, setQuantity] = useState(0);
+    const [quantity, setQuantity] = useState("");
 
     useEffect(() => {
         const fetchProducts = async () => {
@@ -22,12 +21,13 @@ export default function Products(props) {
             }
         };
         fetchProducts();
-    }, []); // run only once on mount
+    }, []);
 
     const openModal = (product) => setActiveProduct(product);
+
     const closeModal = () => {
         setActiveProduct(null);
-        setQuantity(0); // reset quantity when modal closes
+        setQuantity(0);
     };
 
     const handleAddBasket = async () => {
@@ -40,9 +40,12 @@ export default function Products(props) {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
                 body: JSON.stringify({
-                    productTitle: activeProduct.productTitle,
                     productQuantity: quantity,
+                    productTitle: activeProduct.productTitle,
                     productsPrice: quantity * activeProduct.productPrice,
+                    productImage: activeProduct.productImage,
+                    productPrice: activeProduct.productPrice,
+                    productDescription: activeProduct.productDescription
                 }),
             });
             const data = await res.json();
@@ -70,14 +73,13 @@ export default function Products(props) {
                 ))}
             </div>
 
-            {/* Modal rendered once in parent */}
             {activeProduct && (
                 <Modal isOpen={!!activeProduct} onClose={closeModal}>
                     <h2>{activeProduct.productTitle}</h2>
                     <input
                         type="number"
                         value={quantity}
-                        onChange={(e) => setQuantity(Number(e.target.value))}
+                        onChange={(e) => setQuantity(e.target.value)}
                     />
                     <p>Total: £{quantity * activeProduct.productPrice}</p>
                     <button onClick={handleAddBasket}>Add</button>

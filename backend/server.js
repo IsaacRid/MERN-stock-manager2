@@ -1,68 +1,62 @@
 const express = require("express")
 const cors = require('cors');
+const { v4: uuidv4 } = require('uuid');
 const app = express()
 const PORT = 3000
 
 app.use(express.json())
 
-// Allow local dev origins (add other dev origins as needed)
 app.use(cors({
     origin: [
         'http://localhost:5173',
-        'http://localhost:5174'
+        'http://localhost:5174',
+        'http://localhost:5175'
     ]
 }));
 
-let orders = []
+let basket = []
 let products = [{
     "productImage": "https://cdn.4imprint.co.uk/prod/extras/303119/90230/700/1.jpg",
     "productTitle": "pen",
     "productDescription": "A simple byro pen",
-    "productStock": 15
-}]
+    "productPrice": 2
+}, {
+    "productImage": "https://media.istockphoto.com/id/532048136/photo/fresh-red-apple-isolated-on-white-with-clipping-path.jpg?s=612x612&w=0&k=20&c=aOO4GQQXg10xvOcv0KXYIm3M2kHZSC17lGX_Z9b_KXo=",
+    "productTitle": "apple",
+    "productDescription": "A red apple",
+    "productPrice": 1
+}, {
+    "productImage": "https://media.istockphoto.com/id/1319752077/vector/shoes-cartoon.jpg?s=612x612&w=0&k=20&c=slwK7mBUYW_OE0FSMgd2j8V04vbrZ1X0Ws7byk95MPM=",
+    "productTitle": "shoes",
+    "productDescription": "A pair of shoes",
+    "productPrice": 20
+},]
 
-app.post("/api/order", (req, res) => {
+app.post("/api/basket", (req, res) => {
 
-    const { orderQuantity, productTitle } = req.body;
+    const { productQuantity, productTitle, productsPrice, productImage, productPrice, productDescription } = req.body;
 
-    if (!orderQuantity || !productTitle) {
+    if (!productQuantity || !productTitle) {
         return res.status(400).json({ message: "Order data is required" });
     }
 
-    orders.push({
+    basket.push({
         productTitle,
-        orderQuantity
-    });
-    console.log("New order received:", { productTitle, orderQuantity });
-    console.log(`Current orders: ${JSON.stringify(orders)}`);
-
-    res.status(201).json({ message: "Order received successfully" });
-});
-
-app.get("/api/order", (req, res) => {
-    res.json({ orders });
-    console.log(`Current orders: ${orders}`)
-});
-
-app.post("/api/products", (req, res) => {
-
-    const { productImage, productTitle, productDescription, productStock } = req.body;
-
-    if (!productImage || !productTitle || !productDescription || !productStock) {
-        return res.status(400).json({ message: "Product data is required" });
-    }
-
-    products.push({
+        productQuantity,
+        productsPrice,
         productImage,
-        productTitle,
-        productDescription,
-        productStock
+        productPrice,
+        productDescription
     });
+    console.log("New item added to basket:", { productTitle, productQuantity, productsPrice });
+    console.log(`Current basket: ${JSON.stringify(basket)}`);
 
-    console.log("New product created:", { productTitle });
-    console.log(`Current products: ${JSON.stringify(products)}`);
+    res.status(201).json({ message: "Item added to basket successfully" });
+});
 
-    res.status(201).json({ message: "Product created successfully" });
+app.get("/api/basket", (req, res) => {
+    res.json({ basket });
+    console.log(`Current basket: ${basket}`)
 });
 
 app.get("/api/products", (req, res) => {
