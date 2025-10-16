@@ -59,6 +59,16 @@ app.get("/api/basket", (req, res) => {
     console.log(`Current basket: ${basket}`)
 });
 
+app.delete("/api/basket/:productTitle", (req, res) => {
+    const { productTitle } = req.params;
+
+    basket = basket.filter(item => item.productTitle !== productTitle);
+
+    console.log(`Deleted ${productTitle} from basket`);
+    res.json({ message: "Item removed successfully", basket });
+});
+
+
 app.get("/api/products", (req, res) => {
     res.json({ products })
 })
