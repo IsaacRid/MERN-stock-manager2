@@ -1,38 +1,56 @@
+import React, { useEffect, useState } from "react";
+import { BrowserRouter as Router, Routes, Route, Navigate } from "react-router-dom";
 import { onAuthStateChanged } from "firebase/auth";
 import { auth } from "./context/AuthContext";
-import React, { useState, useEffect } from 'react'
-import Register from './pages/Register'
-import Dashboard from './pages/Dashboard'
+
+import Register from "./pages/Register";
 import Login from "./pages/Login";
+import Dashboard from "./pages/Dashboard";
 import Products from "./pages/Products";
 import Basket from "./pages/Basket";
+import Success from "./pages/Success";
+import Cancel from "./pages/Cancel";
 
 export default function App() {
-
   const [user, setUser] = useState(null);
-  const [currentPage, setCurrentPage] = useState('register');
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     const unsubscribe = onAuthStateChanged(auth, (firebaseUser) => {
-      if (firebaseUser) {
-        setUser(firebaseUser);
-        setCurrentPage('dashboard');
-      } else {
-        setUser(null);
-        setCurrentPage('register');
-      }
+      if (firebaseUser) setUser(firebaseUser);
+      else setUser(null);
+      setLoading(false);
     });
 
     return () => unsubscribe();
   }, []);
 
+  if (loading) return <div>Loading...</div>;
+
   return (
-    <>
-      {currentPage === 'register' && <Register setCurrentPage={setCurrentPage} />}
-      {currentPage === "login" && <Login setCurrentPage={setCurrentPage} />}
-      {currentPage === 'dashboard' && <Dashboard setCurrentPage={setCurrentPage} />}
-      {currentPage === 'products' && <Products setCurrentPage={setCurrentPage} />}
-      {currentPage === 'basket' && <Basket setCurrentPage={setCurrentPage} />}
-    </>
-  )
+    <Router>
+      <Routes>
+        <Route path="/register" element={<Register />} />
+        <Route path="/login" element={<Login />} />
+
+        <Route
+          path="/dashboard"
+          element={user ? <Dashboard /> : <Navigate to="/login" replace />}
+        />
+        <Route
+          path="/products"
+          element={user ? <Products /> : <Navigate to="/login" replace />}
+        />
+        <Route
+          path="/basket"
+          element={user ? <Basket /> : <Navigate to="/login" replace />}
+        />
+
+        <Route path="/success" element={<Success />} />
+        <Route path="/cancel" element={<Cancel />} />
+
+        <Route path="*" element={<Navigate to={user ? "/dashboard" : "/register"} />} />
+      </Routes>
+    </Router>
+  );
 }

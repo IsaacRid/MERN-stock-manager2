@@ -1,14 +1,20 @@
-import "../index.css"
+import React from "react";
+import { Link } from "react-router-dom";
 
-export default function Navbar(props) {
-
-    const { setCurrentPage } = props
-
+export default function Navbar() {
     return (
         <nav className="navbar">
-            <button onClick={() => { setCurrentPage("dashboard") }}>Dashboard</button>
-            <button onClick={() => { setCurrentPage("products") }}>Products</button>
-            <button onClick={() => { setCurrentPage("basket") }}>Basket</button>
+            <ul className="navbar-list">
+                <li>
+                    <Link to="/dashboard">Dashboard</Link>
+                </li>
+                <li>
+                    <Link to="/products">Products</Link>
+                </li>
+                <li>
+                    <Link to="/basket">Basket</Link>
+                </li>
+            </ul>
         </nav>
-    )
+    );
 }

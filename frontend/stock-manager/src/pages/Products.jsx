@@ -1,13 +1,14 @@
 import React, { useState, useEffect } from "react";
+import { useNavigate } from "react-router-dom";
 import Navbar from "../components/Navbar";
 import ProductCard from "../components/ProductCard";
 import Modal from "../components/Modal";
 
-export default function Products(props) {
-    const { setCurrentPage } = props;
+export default function Products() {
     const [products, setProducts] = useState([]);
     const [activeProduct, setActiveProduct] = useState(null);
-    const [quantity, setQuantity] = useState("");
+    const [quantity, setQuantity] = useState(1);
+    const navigate = useNavigate();
 
     useEffect(() => {
         const fetchProducts = async () => {
@@ -24,17 +25,10 @@ export default function Products(props) {
     }, []);
 
     const openModal = (product) => setActiveProduct(product);
-
-    const closeModal = () => {
-        setActiveProduct(null);
-        setQuantity(0);
-    };
+    const closeModal = () => { setActiveProduct(null); setQuantity(0); };
 
     const handleAddBasket = async () => {
-        if (!quantity) {
-            alert("Please enter a quantity");
-            return;
-        }
+        if (!quantity) { alert("Please enter a quantity"); return; }
         try {
             const res = await fetch("http://localhost:3000/api/basket", {
                 method: "POST",
@@ -59,11 +53,11 @@ export default function Products(props) {
 
     return (
         <>
-            <Navbar setCurrentPage={setCurrentPage} />
+            <Navbar />
             <div className="products-grid">
                 {products.map((product) => (
                     <ProductCard
-                        key={product.id}
+                        key={product.productTitle}
                         productImage={product.productImage}
                         productTitle={product.productTitle}
                         productDescription={product.productDescription}
@@ -71,16 +65,12 @@ export default function Products(props) {
                         onOpenModal={() => openModal(product)}
                     />
                 ))}
-            </div>
 
+            </div>
             {activeProduct && (
                 <Modal isOpen={!!activeProduct} onClose={closeModal}>
                     <h2>{activeProduct.productTitle}</h2>
-                    <input
-                        type="number"
-                        value={quantity}
-                        onChange={(e) => setQuantity(e.target.value)}
-                    />
+                    <input type="number" value={quantity} onChange={(e) => setQuantity(e.target.value)} />
                     <p>Total: £{quantity * activeProduct.productPrice}</p>
                     <button onClick={handleAddBasket}>Add</button>
                     <button onClick={closeModal}>Close</button>

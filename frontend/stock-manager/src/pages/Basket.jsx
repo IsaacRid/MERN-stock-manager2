@@ -1,8 +1,9 @@
 import React, { useState, useEffect } from "react";
+import { Link } from "react-router-dom";
 import Navbar from "../components/Navbar";
 import BasketProduct from "../components/BasketProduct";
 
-export default function Basket({ setCurrentPage }) {
+export default function Basket() {
     const [basket, setBasket] = useState([]);
 
     useEffect(() => {
@@ -18,9 +19,20 @@ export default function Basket({ setCurrentPage }) {
         fetchBasket();
     }, []);
 
-    const handleCheckout = () => {
-
-    }
+    const handleCheckout = async () => {
+        try {
+            const res = await fetch("http://localhost:3000/api/checkout", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ basket }),
+            });
+            const data = await res.json();
+            if (data.url) window.location.href = data.url;
+        } catch (err) {
+            console.error(err);
+            alert("Checkout failed");
+        }
+    };
 
     const handleDelete = async (productTitle) => {
         try {
@@ -28,11 +40,8 @@ export default function Basket({ setCurrentPage }) {
                 method: "DELETE",
             });
             const data = await res.json();
-            if (res.ok) {
-                setBasket(data.basket);
-            } else {
-                alert(`Failed: ${data.message}`);
-            }
+            if (res.ok) setBasket(data.basket);
+            else alert(`Failed: ${data.message}`);
         } catch (err) {
             alert(err.message);
         }
@@ -44,14 +53,11 @@ export default function Basket({ setCurrentPage }) {
         setBasket(updatedBasket);
     };
 
-    const total = basket.reduce(
-        (sum, item) => sum + item.productPrice * item.productQuantity,
-        0
-    );
+    const total = basket.reduce((sum, item) => sum + item.productPrice * item.productQuantity, 0);
 
     return (
         <>
-            <Navbar setCurrentPage={setCurrentPage} />
+            <Navbar />
             <div className="basket-list">
                 {basket.map((item, index) => (
                     <BasketProduct
@@ -61,9 +67,7 @@ export default function Basket({ setCurrentPage }) {
                         productDescription={item.productDescription}
                         productPrice={item.productPrice}
                         quantity={item.productQuantity}
-                        handleQuantityChange={(newQuantity) =>
-                            handleQuantityChange(index, newQuantity)
-                        }
+                        handleQuantityChange={(newQuantity) => handleQuantityChange(index, newQuantity)}
                         handleDelete={() => handleDelete(item.productTitle)}
                     />
                 ))}
@@ -71,9 +75,7 @@ export default function Basket({ setCurrentPage }) {
             <div className="basket-total">
                 <h3>Total Basket Price: £{total.toFixed(2)}</h3>
             </div>
-            <button onClick={handleCheckout}>
-                Checkout
-            </button>
+            <button onClick={handleCheckout}>Checkout</button>
         </>
     );
 }

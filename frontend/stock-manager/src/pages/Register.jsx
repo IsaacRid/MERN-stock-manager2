@@ -1,12 +1,14 @@
 import React, { useState } from 'react';
 import { createUserWithEmailAndPassword, updateProfile, setPersistence, browserLocalPersistence } from "firebase/auth";
+import { useNavigate } from "react-router-dom";
 import { auth } from "../context/AuthContext";
 
-export default function Register({ setCurrentPage }) {
+export default function Register() {
     const [username, setUsername] = useState('');
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
     const [confirmPassword, setConfirmPassword] = useState('');
+    const navigate = useNavigate();
 
     const handleRegisterSubmit = async (e) => {
         e.preventDefault();
@@ -17,20 +19,13 @@ export default function Register({ setCurrentPage }) {
 
         try {
             await setPersistence(auth, browserLocalPersistence);
-
             const userCredential = await createUserWithEmailAndPassword(auth, email, password);
-
             await updateProfile(userCredential.user, { displayName: username });
-
             alert("Registration successful!");
-            setCurrentPage("dashboard");
+            navigate("/dashboard");
         } catch (error) {
-            if (error.code === "auth/email-already-in-use") {
-                alert("This email is already registered!");
-            } else {
-                console.error(error);
-                alert(error.message);
-            }
+            if (error.code === "auth/email-already-in-use") alert("This email is already registered!");
+            else alert(error.message);
         }
     };
 
@@ -44,9 +39,8 @@ export default function Register({ setCurrentPage }) {
                 <input type="password" placeholder="Confirm Password" value={confirmPassword} onChange={(e) => setConfirmPassword(e.target.value)} />
                 <button type="submit">Register</button>
             </form>
-
             <h4>Already have an account?</h4>
-            <button onClick={() => setCurrentPage("login")}>Login</button>
+            <button onClick={() => navigate("/login")}>Login</button>
         </>
     );
 }

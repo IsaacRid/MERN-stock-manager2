@@ -1,14 +1,16 @@
 import React from 'react';
 import { signOut } from "firebase/auth";
+import { useNavigate } from "react-router-dom";
 import { auth } from "../context/AuthContext";
-import Navbar from "../components/Navbar"
+import Navbar from "../components/Navbar";
 
-export default function Dashboard(props) {
-    const { setCurrentPage } = props
+export default function Dashboard() {
+    const navigate = useNavigate();
+
     const handleSignout = async () => {
         try {
             await signOut(auth);
-            setCurrentPage("register");
+            navigate("/");
         } catch (error) {
             console.error("Signout error:", error);
         }
@@ -16,7 +18,7 @@ export default function Dashboard(props) {
 
     return (
         <>
-            <Navbar setCurrentPage={setCurrentPage}></Navbar>
+            <Navbar />
             <div id="dashboard-container">
                 <h1>Dashboard</h1>
                 <p>Welcome, {auth.currentUser?.displayName || auth.currentUser?.email}</p>

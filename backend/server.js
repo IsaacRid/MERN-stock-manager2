@@ -1,6 +1,11 @@
-const express = require("express")
-const cors = require('cors');
-const { v4: uuidv4 } = require('uuid');
+const express = require("express");
+const cors = require("cors");
+const dotenv = require("dotenv");
+const Stripe = require("stripe");
+const { v4: uuidv4 } = require("uuid");
+
+dotenv.config();
+const stripe = new Stripe(process.env.STRIPE_SECRET_KEY);
 const app = express()
 const PORT = 3000
 
@@ -72,6 +77,38 @@ app.delete("/api/basket/:productTitle", (req, res) => {
 app.get("/api/products", (req, res) => {
     res.json({ products })
 })
+
+app.post("/api/checkout", async (req, res) => {
+    try {
+        const { basket } = req.body;
+
+        const lineItems = basket.map(item => ({
+            price_data: {
+                currency: "gbp",
+                product_data: {
+                    name: item.productTitle,
+                    description: item.productDescription,
+                    images: [item.productImage],
+                },
+                unit_amount: Math.round(item.productPrice * 100),
+            },
+            quantity: item.productQuantity,
+        }));
+
+        const session = await stripe.checkout.sessions.create({
+            mode: "payment",
+            payment_method_types: ["card"],
+            line_items: lineItems,
+            success_url: "http://localhost:5173/success",
+            cancel_url: "http://localhost:5173/cancel",
+        });
+
+        res.json({ url: session.url });
+    } catch (err) {
+        console.error(err);
+        res.status(500).json({ error: "Failed to create checkout session" });
+    }
+});
 
 app.listen(PORT, () => {
     console.log(`Server running on http://localhost:${PORT}`)
